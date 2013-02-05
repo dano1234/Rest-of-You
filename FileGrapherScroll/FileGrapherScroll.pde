@@ -16,6 +16,7 @@ import processing.serial.Serial;
 
   public void setup() {
     
+    
     size(1024, 600); // Stage size
     noStroke(); // No border on the next thing drawn
     font = createFont("ArialMT-12.vlw", 24);
