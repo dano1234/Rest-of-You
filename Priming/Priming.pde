@@ -18,7 +18,7 @@ String[][] others = {
   }
   , 
   {
-    "pawet", "--", "--", "--", "jetqen", "--", "chp", "fuut", "allit", "--", "--", "compber", "hedfer", "--", "refr", "nomr", "--", "greum", "--", "--"
+    "pawet", "", "", "", "jetqen", "", "chp", "fuut", "allit", "", "", "compber", "hedfer", "", "refr", "nomr", "", "greum", "", ""
   }
 };
 int w = 1280;
@@ -120,6 +120,7 @@ void newPrime() {
   whichPass++;
   if (whichPass >= primes.length) {
     mode = FINISHED;
+    println(results);
   }
   else {
     showingPrime = false;
@@ -156,6 +157,16 @@ void keyPressed() {
   if (mode == TESTING ) {
     results[whichPass][placeInOrder] = millis()- wordStartTime;
     nextWord();
+  }
+  //print results
+  for(int i = 0; i < results.length; i++){
+    int[] thisWord = results[i];
+    print("prime: " + primes[i]  + " " + thisWord.length); 
+    for(int j = 0; j < thisWord.length; j++){
+      print( " other:" + others[j][i]);
+      print(results[i][j] );
+    }
+    println("-");
   }
 }
 
