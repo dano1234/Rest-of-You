@@ -84,7 +84,6 @@ void draw() {
   background(127);
 
   if (mode == PRIMING) {
-    println(showingPrime);
     if ( millis() - wordStartTime >= timePerPrimeTotal) {  //for the word showing or not
       nextWord();
     } 
@@ -136,15 +135,18 @@ void newPrime() {
 
 
 void nextWord() {
-  println("New Word");
-  if (mode == TESTING && placeInOrder >= currentOrder.length -1 ) {
+  println(placeInOrder + "New Word" +  currentOrder.length );
+  if ((mode == TESTING) && placeInOrder >= currentOrder.length -1 ) {
+      println("New Prime");
     newPrime();
   } 
   else   if (mode == PRIMING) {
+      println("From Prime to word");
     mode = TESTING;
     wordStartTime = millis();
   }
   else {
+        println("just new word word");
     wordStartTime = millis();
     placeInOrder++;
   }
@@ -153,7 +155,7 @@ void nextWord() {
 void keyPressed() {
   if (mode == TESTING ) {
     results[whichPass][placeInOrder] = millis()- wordStartTime;
-    newPrime();
+    nextWord();
   }
 }
 
