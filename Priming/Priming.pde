@@ -23,10 +23,13 @@ String[][] others = {
 };
 int w = 1280;
 int h = 900;
-int mode = 0;
-int PRIMING = 0;
-int TESTING = 1;
-int FINISHED = 2;
+
+int INSTRUCTIONS1 = 0;
+int PRIMING = 1;
+int INSTRUCTIONS2 = 2;
+int TESTING = 3;
+int FINISHED = 4;
+int mode = INSTRUCTIONS1;
 int wordStartTime;
 int[][] testingOrders = {
   {
@@ -62,6 +65,7 @@ int timePerPrimeNotShowing = 500;
 int startTimeForThisPrime  = 0;
 String maskingWord = "XQFBZRMQWGBX";
 int whichPass = -1;
+int fontHeight = 24;
 
 Point[]  primeLocs = {
   new Point(w/2- distanceFromFocus, h/2 -distanceFromFocus), 
@@ -74,16 +78,40 @@ Point[]  primeLocs = {
 void setup() {
   size(w, h);
 
-  font = createFont("Helvetica-48", 48);
+  font = createFont("Helvetica-48", fontHeight);
   textFont(font);
   frameRate(120);
-  newPrime();
+  textAlign(CENTER);
+  ellipseMode(CENTER);
+  // newPrime();
 }
 
 void draw() {
   background(127);
+  fill(255);
+      ellipse(width/2, height/2, 500, 500);
+          ellipse(width/2, height/2, 200, 200);
+    ellipse(width/2, height/2, 100, 100);
+  if (mode == INSTRUCTIONS1) {
+    fill(0,0,0);
+    text("INSTRUCTIONS:", width/2, 100-fontHeight*2);
+    text("1) Stare at the bullseye in the center of the screen.", width/2, 100-fontHeight);
+    text("2) Press the 'E' key if you see flashing text on the left side.", width/2, 100);
+    text("3) Press the 'E' key if you see flashing text on the left side.", width/2, 100 +fontHeight);
+    text("Press Any Button to begin.", width/2, 100+fontHeight*2);
+  }
+  if (mode == INSTRUCTIONS2) {
+     fill(0,0,0);
+    text("INSTRUCTIONS:", width/2, 100-fontHeight*2);
+    text("Look at words in bullseye", width/2, 100-fontHeight);
+    text("Press Spacebar for real words", width/2, 100);
+    text("Prss any other key for fake words", width/2, 100 +fontHeight);
+    text("Press Any Button to begin.", width/2, 100+fontHeight*2);
+  }
+  
 
   if (mode == PRIMING) {
+        fill(0,0,0);
     if ( millis() - wordStartTime >= timePerPrimeTotal) {  //for the word showing or not
       nextWord();
     } 
@@ -107,11 +135,11 @@ void draw() {
     }
   }
   if (mode == TESTING) {
-
+    fill(0,0,0);
     text(others[currentOrder[placeInOrder]][whichPass], width/2, height/2);
   }
 
-  ellipse(width/2-100, height/2-100, 200, 200);
+ 
 }
 
 void newPrime() {
@@ -138,31 +166,40 @@ void newPrime() {
 void nextWord() {
   println(placeInOrder + "New Word" +  currentOrder.length );
   if ((mode == TESTING) && placeInOrder >= currentOrder.length -1 ) {
-      println("New Prime");
-    newPrime();
+   mode = INSTRUCTIONS1;
   } 
   else   if (mode == PRIMING) {
-      println("From Prime to word");
+    println("From Prime to word");
     mode = TESTING;
     wordStartTime = millis();
   }
   else {
-        println("just new word word");
+    println("just new word word");
     wordStartTime = millis();
     placeInOrder++;
+    if (others[currentOrder[placeInOrder]][whichPass].equals("")) {placeInOrder++; nextWord();}
   }
 }
 
 void keyPressed() {
+  if (mode == INSTRUCTIONS1) {
+   newPrime();
+  }
+   if (mode == INSTRUCTIONS2) {
+   mode = TESTING;
+   }
   if (mode == TESTING ) {
     results[whichPass][placeInOrder] = millis()- wordStartTime;
     nextWord();
   }
+   if (mode == PRIMING) {
+     primePoint = primeLocs[int(random(0, primeLocs.length))];
+  }
   //print results
-  for(int i = 0; i < results.length; i++){
+  for (int i = 0; i < results.length; i++) {
     int[] thisWord = results[i];
     print("prime: " + primes[i]  + " " + thisWord.length); 
-    for(int j = 0; j < thisWord.length; j++){
+    for (int j = 0; j < thisWord.length; j++) {
       print( " other:" + others[j][i]);
       print(results[i][j] );
     }
