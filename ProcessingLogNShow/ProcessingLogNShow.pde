@@ -19,7 +19,7 @@ int lasty;
 int mid;
 
 public void setup() {
-  size(displayWidth*3/4, 600); // Stage size
+  size(800, 600); // Stage size
   mid = height/2;
   stroke(255);
   // Print a list of the serial ports, for debugging purposes to find out what your ports are called:
@@ -33,8 +33,9 @@ public void setup() {
   try {
     file = new FileOutputStream("/Users/dano/Documents/logi.txt", true);//true means append to the file
   }
-  catch (FileNotFoundException donnaKaran) {
-    donnaKaran.printStackTrace();
+  catch (FileNotFoundException e) {
+
+    e.printStackTrace();
   }
 
   background(0);

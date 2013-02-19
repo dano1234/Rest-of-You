@@ -1,25 +1,15 @@
 public class DataField {
 
   int myColor = 0;
-
   int biggestValueEver = 0;
-
   int smallestValueEver = Integer.MAX_VALUE;
-
   int lastReading = 0;
-
   int consecutiveThreshold = 7;
-
   byte[] transitions;
-
   int lastTransition = 0;
-
   int consecutiveDown = 0;
-
   int consecutiveUp = 0;
-
   int lastMark;
-
   int[] values;
 
   String fieldName;

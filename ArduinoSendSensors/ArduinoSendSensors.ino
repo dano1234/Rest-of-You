@@ -11,6 +11,8 @@ Serial.begin(9600);
 }
 
 void loop() {
+  
+
 
 electricity = analogRead(0);
 Serial.print(electricity);
@@ -24,14 +26,15 @@ heat = analogRead(2);
 Serial.print(heat);
 Serial.print(",");
 
+
 light = analogRead(3);
 Serial.print(light);
 Serial.print(",");
-
+/*
 posture = analogRead(4);
 Serial.print(posture);
 Serial.print(",");
-
+*/
 breath = analogRead(5);
 Serial.print(breath);
 Serial.print(",");
