@@ -1,6 +1,8 @@
 //Look for Circles in processing
+import java.awt.*;
 
 ArrayList positionsInThisStroke = new ArrayList();
+
 Rectangle currentRect = new Rectangle();
 String[] circleFeedBack = {
   "Zen Like Circling", "Circular", "Little Flabby", "Square!"
@@ -28,7 +30,7 @@ void analyzeStrokes() {
   int radius = (currentRect.width + currentRect.height)/4;
   int midx = currentRect.width/2 + currentRect.x;
   int midy = currentRect.height/2 + currentRect.y;
-  for (int j =0; j &lt; positionsInThisStroke.size(); j++) {
+  for (int j =0; j < positionsInThisStroke.size(); j++) {
     Point thisPoint = (Point) positionsInThisStroke.get(j);
     totalX = totalX + thisPoint.x;
     totalY = totalY + thisPoint.y;
@@ -47,7 +49,7 @@ void mousePressed() {
 }
 
 void mouseDragged() {
-  if (dist(previousX, previousY, mouseX, mouseY)&gt; 
+  if (dist(previousX, previousY, mouseX, mouseY)> 
   4) {
     currentRect.add(mouseX, mouseY);
     Point here = new Point(mouseX, mouseY);
@@ -58,14 +60,13 @@ void mouseDragged() {
 }
 
 void mouseReleased() {
-  if (positionsInThisStroke.size() &gt; 
-  0 ) analyzeStrokes();
+  if (positionsInThisStroke.size() >  0 ) analyzeStrokes();
 }
-
+/*
 void smoothOutValues(int _whichField, int _howManyStandardDeviationsAcceptable) {
   int total = 0;
   //find the average
-  for (int i = 0; i&lt; dates.length; i++ ) {
+  for (int i = 0; i< dates.length; i++ ) {
     Date thisDate = (Date) dates[i];
     int[] thisRecord = (int[]) allRecords.get(thisDate);
     total = total + thisRecord[_whichField];
@@ -74,18 +75,18 @@ void smoothOutValues(int _whichField, int _howManyStandardDeviationsAcceptable) 
   //find all the deviations from the average
   int average = total/dates.length;
   int deviations = 0;
-  for (int i = 0; i&lt; dates.length; i++ ) {
+  for (int i = 0; i< dates.length; i++ ) {
     Date thisDate = (Date) dates[i];
     int[] thisRecord = (int[]) allRecords.get(thisDate);
     deviations = deviations + Math.abs(thisRecord[_whichField]-average);
   }
   int standardDeviation = deviations/dates.length;
   //kick out things that deviate to far from the average
-  for (int i = 0; i&lt; dates.length; i++ ) {
+  for (int i = 0; i< dates.length; i++ ) {
     Date thisDate = (Date) dates[i];
     int[] thisRecord = (int[]) allRecords.get(thisDate);
     int deviation = Math.abs(thisRecord[_whichField]-average);
-    if (deviation &gt; 
+    if (deviation >
     _howManyStandardDeviationsAcceptable * standardDeviation) {
       thisRecord[_whichField] = average;
 
@@ -95,4 +96,4 @@ void smoothOutValues(int _whichField, int _howManyStandardDeviationsAcceptable) 
     // println("After" + thisRecord[_whichField]);
   }
 }
-
+*/
