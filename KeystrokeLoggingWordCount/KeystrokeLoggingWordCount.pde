@@ -11,11 +11,14 @@ Then write a program to count your words, then find a way to pick out the most <
 <img title="More..." src="../../../%7Edbo3/roy2010/wp-includes/js/tinymce/plugins/wordpress/img/trans.gif" alt="" />
 */
 
+import java.util.*;
+
 TreeMap wordCounts = new TreeMap();
 
 void setup(){
+  String [] myLines = loadStrings("http://www.gutenberg.org/cache/epub/15/pg15.txt");
 
-  String [] myLines = loadStrings("/Users/dano/Desktop/out_logFile.txt");
+  //String [] myLines = loadStrings("/Users/dano/Desktop/out_logFile.txt");
 
   String allText = join(myLines,"");
 

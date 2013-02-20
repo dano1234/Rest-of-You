@@ -80,14 +80,13 @@ synchronized void packetEvent(CarnivorePacket packet) {
     // }
     if (contents.startsWith("GET")) {// || contents.startsWith("X-Mailer"))
       String[] words = contents.split(" ");
-      if (words.length &gt; 
-      2) {
+      if (words.length >2) {
         String url = words[1];
         int qss = url.indexOf("?");
         println(qss + url);
         String queryString = url.substring(qss+ 1, url.length());
 
-        queryString = queryString.replace('&amp;', ' ');
+        queryString = queryString.replace('&', ' ');
         queryString = queryString.replace('=', ' ');
         queryString = queryString.replace('+', ' ');
         println("GEEEET STUFF" + queryString);// + packet.ascii());
