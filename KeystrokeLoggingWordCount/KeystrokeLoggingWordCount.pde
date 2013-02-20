@@ -16,7 +16,7 @@ import java.util.*;
 TreeMap wordCounts = new TreeMap();
 
 void setup(){
-  String [] myLines = loadStrings("http://www.gutenberg.org/cache/epub/15/pg15.txt");
+  String [] myLines = loadStrings("MobyDick.txt");
 
   //String [] myLines = loadStrings("/Users/dano/Desktop/out_logFile.txt");
 
