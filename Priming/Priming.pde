@@ -1,26 +1,33 @@
 import java.awt.*;
 PFont font;
 int counter = 0 ;
-String[]  primes = {
-  "help", "start", "ocean", "angry", "child", "hint", "stop", "rear", "rope", "shy", "boring", "sad", "moral", "throat", "share", "shoe", "road", "alarm", "female", "coat"
+String words[] =
+{
+  "help donate rotund frentd pawet", 
+  "start begin hours guipd --", 
+  "ocean water could phewe --", 
+  "angry mad dug gix --", 
+  "child infant levers entupe jetqen", 
+  "hint clue stem tepr --", 
+  "stop end few rtn chp", 
+  "rear back know daot fuut", 
+  "rope string total spont allit", 
+  "shy quiet teeth stoow --", 
+  "boring dull shed sask --", 
+  "sad unhappy mineral slekies compber", 
+  "moral ethical boilers whistpy hedfer", 
+  "throat neck rate easp --", 
+  "share give line cahe refr", 
+  "shoe boot sped kiwn nomr", 
+  "road street trying clopir --", 
+  "alarm warning lengths petsuns greum", 
+  "female woman pages boaps --", 
+  "coat jacket habits mepalz --"
 };
-String[][] others = {
-  {
-    "donate", "begin", "water", "mad", "infant", "clue", "end", "back", "string", "quiet", "dull", "unhappy", "ethical", "neck", "give", "boot", "street", "warning", "woman", "jacket"
-  }
-  , 
-  {
-    "rotund", "hours", "could", "dug", "levers", "stem", "few", "know", "total", "teeth", "shed", "mineral", "boilers", "rate", "line", "sped", "trying", "lengths", "pages", "habits"
-  }
-  , 
-  {
-    "frentd", "guipd", "phewe", "gix", "entupe", "tepr", "rtn", "daot", "spont", "stoow", "sask", "slekies", "whistpy", "easp", "cahe", "kiwn", "clopir", "petsuns", "boaps", "mepalz"
-  }
-  , 
-  {
-    "pawet", "", "", "", "jetqen", "", "chp", "fuut", "allit", "", "", "compber", "hedfer", "", "refr", "nomr", "", "greum", "", ""
-  }
-};
+
+String currentPrimeWord = "";
+
+
 int w = 1280;
 int h = 900;
 
@@ -33,27 +40,29 @@ int mode = INSTRUCTIONS1;
 int wordStartTime;
 int[][] testingOrders = {
   {
-    0, 1, 2, 3
+    1, 2, 3, 4
   }
   , {
-    2, 1, 0, 3
+    1, 2, 1, 4
   }
   , {
-    1, 2, 0, 3
+    2, 3, 1, 4
   }
   , {
-    1, 0, 2, 3
+    2, 1, 3, 4
   }
   , {
-    2, 0, 1, 3
+    3, 1, 2, 4
   }
   , {
-    0, 2, 1, 3
+    1, 3, 2, 4
   }
 }; //are their others?
 int[]  currentOrder;
 int placeInOrder = 0;
-int[][] results = new int[primes.length][4];
+String[][] results = new String[words.length][4];
+String[] currentWords ;
+String currentWord;
 Point primePoint;
 
 boolean showingPrime;
@@ -114,11 +123,13 @@ void draw() {
     fill(0, 0, 0);
     if ( millis() - wordStartTime >= timePerPrimeTotal) {  //for the word showing or not
       mode = INSTRUCTIONS2;
-    } else {
+    } 
+    else {
       if (showingPrime) {
         if (millis() -startTimeForThisPrime  < timePerPrimeShowing) {
-          text(primes[whichPrime], primePoint.x + 100, primePoint.y);
-        } else {
+          text(currentPrimeWord, primePoint.x + 100, primePoint.y);
+        } 
+        else {
           showingPrime = false;
           startTimeForThisPrime = millis();
         }
@@ -134,76 +145,80 @@ void draw() {
   }
   if (mode == TESTING) {
     fill(0, 0, 0);
-    text(others[currentOrder[placeInOrder]][whichPrime], width/2, height/2);
+    text(currentWord, width/2, height/2);
   }
 }
 
-void showPrime() {
+void newPrime() {
 
   println("New Prime");
   whichPrime++;
-  if (whichPrime >= primes.length) {
+  if (whichPrime >= words.length) {
     mode = FINISHED;
     println(results);
-  } else {
+  } 
+  else {
     showingPrime = false;
     startTimeForThisPrime = millis();
     primePoint = primeLocs[int(random(0, primeLocs.length))];
     wordStartTime = millis();
+    currentWords = words[whichPrime].split(" ");
+    currentPrimeWord = currentWords[0];
     currentOrder = testingOrders[int(random(0, testingOrders.length))];
     placeInOrder = 0;
     mode = PRIMING;
-    printResults();
+    // printResults();
   }
 }
 
 
 
-void nextWord() {
-  println(placeInOrder + "New Word" +  currentOrder.length );
-  if ((mode == TESTING) && placeInOrder >= currentOrder.length -1 ) {
+void nextTest() {
+  if (mode == TESTING) {
+    //if last word was testing rather than instructions
+    results[whichPrime][placeInOrder] = currentWord + ":" + (millis()-wordStartTime);
+  }
+  mode = TESTING;
+ // println(placeInOrder + "New Word" +  currentOrder.length );
+  if (placeInOrder >= currentOrder.length-1 ) {
     mode = INSTRUCTIONS1;
-  } else   if (mode == PRIMING) {
-    println("From Prime to word");
-    mode = TESTING;
-    wordStartTime = millis();
-  } else {
-    println("just new word word");
-    wordStartTime = millis();
+  }  else {
+   // println("just new word word");
     placeInOrder++;
-  //  if (others[currentOrder[placeInOrder]][whichPrime].equals("")) {
-    //  placeInOrder++; 
-    //  nextWord();
-   // }
+    currentWord = currentWords[currentOrder[placeInOrder]];
+    print(placeInOrder , currentOrder[placeInOrder], currentWord);
+    wordStartTime = millis();
   }
 }
 
 void keyPressed() {
   if (mode == INSTRUCTIONS1) {
-    showPrime();
+    //printResults();
+    newPrime();
   }
-  if (mode == INSTRUCTIONS2) {
-    mode = TESTING;
+  else if (mode == TESTING ) {
+    // results[whichPrime][placeInOrder] = millis()- wordStartTime;
+    nextTest();
   }
-  if (mode == TESTING ) {
-    results[whichPrime][placeInOrder] = millis()- wordStartTime;
-    nextWord();
+  else if (mode == INSTRUCTIONS2) {
+    nextTest();
   }
-  if (mode == PRIMING) {
+  else if (mode == PRIMING) {
+    placeInOrder = 0;  // at prime
     primePoint = primeLocs[int(random(0, primeLocs.length))];
   }
 }
 
-void printResults(){
-   //print results
+void printResults() {
+  //print results
   for (int i = 0; i < results.length; i++) {
-    int[] thisWord = results[i];
-    print("prime: " + primes[i]  + " " + thisWord.length); 
-    for (int j = 0; j < thisWord.length; j++) {
-      print( " other:" + others[j][i]);
+    String[] thisRow = results[i];
+    println("prime: " + words[i]  ); 
+    for (int j = 0; j < thisRow.length; j++) {
       print(results[i][j] );
     }
     println("-");
   }
 }
+
 
