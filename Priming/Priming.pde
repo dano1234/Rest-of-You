@@ -2,11 +2,12 @@ import java.awt.*;
 PFont font;
 int counter = 0 ;
 String words[] =
-{
+  {
   "help donate rotund frentd pawet", 
   "start begin hours guipd --", 
   "ocean water could phewe --", 
-  "angry mad dug gix --", 
+  "angry mad dug gix --"
+  /*, 
   "child infant levers entupe jetqen", 
   "hint clue stem tepr --", 
   "stop end few rtn chp", 
@@ -23,13 +24,13 @@ String words[] =
   "alarm warning lengths petsuns greum", 
   "female woman pages boaps --", 
   "coat jacket habits mepalz --"
+  */
 };
 
 String currentPrimeWord = "";
 
 
-int w = 1280;
-int h = 900;
+
 
 int INSTRUCTIONS1 = 0;
 int PRIMING = 1;
@@ -38,26 +39,7 @@ int TESTING = 3;
 int FINISHED = 4;
 int mode = INSTRUCTIONS1;
 int wordStartTime;
-int[][] testingOrders = {
-  {
-    1, 2, 3, 4
-  }
-  , {
-    1, 2, 1, 4
-  }
-  , {
-    2, 3, 1, 4
-  }
-  , {
-    2, 1, 3, 4
-  }
-  , {
-    3, 1, 2, 4
-  }
-  , {
-    1, 3, 2, 4
-  }
-}; //are their others?
+int[][] testingOrders = {{ 1, 2, 3, 4}, {1, 2, 1, 4}, { 2, 3, 1, 4}, { 2, 1, 3, 4}, {3, 1, 2, 4}, {1, 3, 2, 4}}; //are their others?
 int[]  currentOrder;
 int placeInOrder = 0;
 String[][] results = new String[words.length][4];
@@ -67,7 +49,7 @@ Point primePoint;
 
 boolean showingPrime;
 
-int distanceFromFocus = 150;
+int distanceFromCenter = 150;
 int timePerPrimeTotal= 8000;
 int timePerPrimeShowing = 60;
 int timePerPrimeNotShowing = 500;
@@ -76,16 +58,11 @@ String maskingWord = "XQFBZRMQWGBX";
 int whichPrime = -1;
 int fontHeight = 24;
 
-Point[]  primeLocs = {
-  new Point(w/2- distanceFromFocus, h/2 -distanceFromFocus), 
-  new Point(w/2- distanceFromFocus, h/2 +distanceFromFocus), 
-  new Point(w/2+ distanceFromFocus, h/2 -distanceFromFocus), 
-  new Point(w/2+ distanceFromFocus, h/2 +distanceFromFocus)
-};
+Point[]  primeLocs = new Point[4] ;
 
 
 void setup() {
-  size(w, h);
+  size(displayWidth, displayHeight);
 
   font = createFont("Helvetica-48", fontHeight);
   textFont(font);
@@ -93,6 +70,10 @@ void setup() {
   textAlign(CENTER);
   ellipseMode(CENTER);
   // showPrime();
+  primeLocs[0] = new Point(width/2- distanceFromCenter, height/2 -distanceFromCenter);
+  primeLocs[1] = new Point(width/2- distanceFromCenter, height/2 +distanceFromCenter); 
+  primeLocs[2] =  new Point(width/2+ distanceFromCenter, height/2 -distanceFromCenter); 
+  primeLocs[3] =  new Point(width/2+ distanceFromCenter, height/2 +distanceFromCenter);
 }
 
 void draw() {
@@ -123,13 +104,11 @@ void draw() {
     fill(0, 0, 0);
     if ( millis() - wordStartTime >= timePerPrimeTotal) {  //for the word showing or not
       mode = INSTRUCTIONS2;
-    } 
-    else {
+    } else {
       if (showingPrime) {
         if (millis() -startTimeForThisPrime  < timePerPrimeShowing) {
           text(currentPrimeWord, primePoint.x + 100, primePoint.y);
-        } 
-        else {
+        } else {
           showingPrime = false;
           startTimeForThisPrime = millis();
         }
@@ -147,17 +126,21 @@ void draw() {
     fill(0, 0, 0);
     text(currentWord, width/2, height/2);
   }
+  if (mode == FINISHED) {
+    fill(0, 0, 0);
+    text("FINISHED", width/2, height/2);
+  }
+  
 }
 
 void newPrime() {
 
-  println("New Prime");
+  //println("New Prime");
   whichPrime++;
   if (whichPrime >= words.length) {
     mode = FINISHED;
-    println(results);
-  } 
-  else {
+    //println(results);
+  } else {
     showingPrime = false;
     startTimeForThisPrime = millis();
     primePoint = primeLocs[int(random(0, primeLocs.length))];
@@ -167,7 +150,7 @@ void newPrime() {
     currentOrder = testingOrders[int(random(0, testingOrders.length))];
     placeInOrder = 0;
     mode = PRIMING;
-    // printResults();
+    printResults();
   }
 }
 
@@ -179,14 +162,14 @@ void nextTest() {
     results[whichPrime][placeInOrder] = currentWord + ":" + (millis()-wordStartTime);
   }
   mode = TESTING;
- // println(placeInOrder + "New Word" +  currentOrder.length );
+  // println(placeInOrder + "New Word" +  currentOrder.length );
   if (placeInOrder >= currentOrder.length-1 ) {
     mode = INSTRUCTIONS1;
-  }  else {
-   // println("just new word word");
+  } else {
+    // println("just new word word");
     placeInOrder++;
     currentWord = currentWords[currentOrder[placeInOrder]];
-    print(placeInOrder , currentOrder[placeInOrder], currentWord);
+   // print(placeInOrder, currentOrder[placeInOrder], currentWord);
     wordStartTime = millis();
   }
 }
@@ -195,15 +178,12 @@ void keyPressed() {
   if (mode == INSTRUCTIONS1) {
     //printResults();
     newPrime();
-  }
-  else if (mode == TESTING ) {
+  } else if (mode == TESTING ) {
     // results[whichPrime][placeInOrder] = millis()- wordStartTime;
     nextTest();
-  }
-  else if (mode == INSTRUCTIONS2) {
+  } else if (mode == INSTRUCTIONS2) {
     nextTest();
-  }
-  else if (mode == PRIMING) {
+  } else if (mode == PRIMING) {
     placeInOrder = 0;  // at prime
     primePoint = primeLocs[int(random(0, primeLocs.length))];
   }
@@ -213,12 +193,11 @@ void printResults() {
   //print results
   for (int i = 0; i < results.length; i++) {
     String[] thisRow = results[i];
+    if (results[i][2] == null) continue;
     println("prime: " + words[i]  ); 
     for (int j = 0; j < thisRow.length; j++) {
-      print(results[i][j] );
+      print(results[i][j]  + "  "  );
     }
-    println("-");
+    //println("-");
   }
 }
-
-
