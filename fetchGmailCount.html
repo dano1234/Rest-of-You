@@ -1,0 +1,249 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Gmail API demo</title>
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <style>
+      iframe {
+        width: 100%;
+        border: 0;
+        min-height: 80%;
+        height: 600px;
+        display: flex;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Gmail API demo</h1>
+
+      <button id="authorize-button" class="btn btn-primary hidden">Authorize</button>
+ 		<button id="next" class="next">Next</button>
+        Query:<input name="query" type="text" size="75" placeholder=" eg from:dan.osullivan@nyu.edu to:george.agudow@nyu.edu" id="query">
+      <br><div id="show"></div>
+  
+    </div>
+
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+	var pageToken = '';
+	//FROM SHIFFMAM
+	 var concordance = new Concordance();
+	 //CHANGE THESE TO YOURS
+      //get two kinds of credtentials client id and api   
+	  // see http://www.sitepoint.com/mastering-your-inbox-with-gmail-javascript-api/ for details
+      var clientId = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com';
+      var apiKey = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+      var scopes = 'https://www.googleapis.com/auth/gmail.readonly';
+	  	 
+		  
+		  
+	  function gotNewMessage(message) {
+		 var myString = getBody(message.payload); 
+		 myString=  myString.substr(0,  myString.indexOf("\nOn")); 
+           //add this to the word count
+  		   concordance.process(myString);
+      }
+
+	  
+
+      function displayInbox() {
+		  var q =  $('#query').val();
+        var request = gapi.client.gmail.users.messages.list({
+          'userId': 'me',
+          //'labelIds': 'INBOX',
+          'maxResults': 1000,
+		  'pageToken' : pageToken
+		  ,'q' : q
+        });
+		
+
+        request.execute(function(response) {
+			pageToken = response.nextPageToken;
+			 $('#next').on('click', function(){
+            displayInbox();
+            });
+          $.each(response.messages, function() {
+            var messageRequest = gapi.client.gmail.users.messages.get({
+              'userId': 'me',
+              'id': this.id
+            });
+
+            messageRequest.execute(gotNewMessage);
+          });
+		 
+        });
+		  display();
+		
+      }
+
+function display(){
+	 concordance.sortByCount();
+			var all = "";
+			for(var i = 0; i < concordance.keys.length; i++){
+				var key = concordance.keys[i] ;
+				all = all + key + ": " + concordance.dict[key] + "\n";
+			}
+  		$("#show").html(all);
+}
+	  
+	  
+// Daniel Shiffman
+// Programming from A to Z, Fall 2014
+// https://github.com/shiffman/Programming-from-A-to-Z-F14
+
+// An object to store all the info related to a concordance
+
+function Concordance() {
+  this.dict = {};
+  this.keys = [];
+  
+
+  // Splitting up the text
+  this.split = function(text) {
+    // Split into array of tokens
+    return text.split(/\W+/);
+  }
+
+  // A function to validate a toke 
+  this.validate = function(token) {
+    return /\w{2,}/.test(token);
+  }
+
+  // Process new text
+  this.process = function(data) {
+    var tokens = this.split(data);
+    // For every token
+    for (var i = 0; i < tokens.length; i++) {
+      // Lowercase everything to ignore case
+      var token = tokens[i].toLowerCase();
+      if (this.validate(token)) {
+        // Increase the count for the token
+        this.increment(token);
+      }
+    }
+  }
+  
+  // An array of keys
+  this.getKeys = function() {
+    return this.keys;
+  }
+  
+  // Get the count for a word
+  this.getCount = function(word) {
+    return this.dict[word];
+  }
+  
+  // Increment the count for a word
+  this.increment = function(word) {
+    // Is this a new word?
+    if (!this.dict[word]) {
+      this.dict[word] = 1;
+      this.keys.push(word);
+    // Otherwise just increment its count
+    } else {
+      this.dict[word]++;
+    }
+  }
+  
+  // Sort array of keys by counts
+  this.sortByCount = function() {
+    // For this function to work for sorting, I have
+    // to store a reference to this so the context is not lost!
+    var concordance = this;
+
+    // A fancy way to sort each element
+    // Compare the counts
+    function sorter(a, b) {
+      var diff = concordance.getCount(b) - concordance.getCount(a);
+      return diff;
+    }
+    
+    // Sort using the function above!
+    this.keys.sort(sorter);
+  }
+
+}
+
+
+
+      
+      function getHeader(headers, index) {
+        var header = '';
+
+        $.each(headers, function(){
+          if(this.name === index){
+            header = this.value;
+          }
+        });
+        return header;
+      }
+
+      function getBody(message) {
+        var encodedBody = '';
+        if(typeof message.parts === 'undefined')
+        {
+          encodedBody = message.body.data;
+        }
+        else
+        {
+          encodedBody = message.parts[0].body.data; //getHTMLPart(message.parts);
+		
+        }
+		if (encodedBody == null) return '';
+        encodedBody = encodedBody.replace(/-/g, '+').replace(/_/g, '/').replace(/\s/g, '');
+        return decodeURIComponent(escape(window.atob(encodedBody)));
+      }
+	  
+	  
+	  
+
+      function handleClientLoad() {
+        gapi.client.setApiKey(apiKey);
+        window.setTimeout(checkAuth, 1);
+      }
+
+      function checkAuth() {
+        gapi.auth.authorize({
+          client_id: clientId,
+          scope: scopes,
+          immediate: true
+        }, handleAuthResult);
+      }
+
+      function handleAuthClick() {
+        gapi.auth.authorize({
+          client_id: clientId,
+          scope: scopes,
+          immediate: false
+        }, handleAuthResult);
+        return false;
+      }
+
+      function handleAuthResult(authResult) {
+        if(authResult && !authResult.error) {
+          loadGmailApi();
+          $('#authorize-button').remove();
+          $('.table-inbox').removeClass("hidden");
+        } else {
+          $('#authorize-button').removeClass("hidden");
+          $('#authorize-button').on('click', function(){
+            handleAuthClick();
+          });
+        }
+      }
+
+      function loadGmailApi() {
+        gapi.client.load('gmail', 'v1', displayInbox);
+      }
+	  
+     
+    </script>
+    <script src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
+  </body>
+</html>
