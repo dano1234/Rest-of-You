@@ -1,0 +1,22 @@
+{
+  "name": "My Replacer",
+  "version": "0.1",
+  "permissions": [
+    "http://www.nytimes.com/*", "http://www.foxnews.com/*", "http://facebook.com/*"
+  ],
+
+  "browser_action": {
+    "default_icon": "icon.png" ,
+    "default_popup": "popup.html"
+  },
+
+  "content_scripts": [
+    {
+
+      "matches": ["https://www.facebook.com/*", "http://www.nytimes.com/*","http://www.foxnews.com/*", "http://*/*", "https://*/*"], // 
+      "js": ["jquery-2.2.1.min.js", "myscript.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "manifest_version": 2
+}
