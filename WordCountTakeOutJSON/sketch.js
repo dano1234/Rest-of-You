@@ -5,12 +5,14 @@ let keys = []
 function preload(){
   console.log("loading");
  //history = loadJSON("BrowserHistory.json");
+// you need to put your file in the same folder and put name here
  history = loadJSON("MyActivity.json");
 
+ 
 }
 
 function setup(){
-    createCanvas(400,400);
+    createCanvas(400,1200);
     //history = history['Browser History'];  //browser history is one level in
     history = history['myActivity'];  //if you surround your json with {"myActivity": ...... millions of lines ... }  you will get length to work
     //otherwise you have to hard code the length in like 100000 in for loop, go figure.
@@ -37,6 +39,7 @@ function setup(){
   for(var i = 0 ; i < 100; i++){
     let key = keys[i];
     console.log(key , index[key]);
+    text(index[key]  + ":" + key, 10, 12 * i);
   }
 
 }
