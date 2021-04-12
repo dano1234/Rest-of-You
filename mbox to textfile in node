@@ -1,0 +1,55 @@
+// install all the node modules from here https://github.com/robertklep/node-mbox
+// mailparser": "^2.1.0",
+const fs = require('fs');
+const MailParser  = require('mailparser').MailParser;
+const Mbox        = require('./src/mbox');
+const mbox        = new Mbox();
+
+
+// 'a' flag stands for 'append'
+var fd = fs.openSync('header.txt', 'w');  //delete this line if you don't want to start over
+const headersStream = fs.createWriteStream('header.txt', { flags: 'a' });
+
+ fd = fs.openSync('body.txt', 'w');  //delete this line if you don't want to start over
+const bodiesStream = fs.createWriteStream('body.txt', { flags: 'a' });
+
+
+// wait for message events
+mbox.on('message', function(msg) {
+
+  // parse message using MailParser
+  let mailparser = new MailParser({ streamAttachments : false });
+  mailparser.on('headers', function(headers) {
+   // console.log(headers);
+
+    // on new log entry ->
+    let froms = "";
+
+    for(var i = 0; i < headers.get('from').value.length; i++){
+      froms = froms  + headers.get('from').value[i].address + ",";
+    }
+    let tos = "";
+    if (headers.get('to')){
+      for(var i = 0; i < headers.get('to').value.length; i++){
+        tos = tos + headers.get('to').value[i].address + ",";
+      }
+    }
+    headersStream.write(froms + '\t' + tos +  '\t' + headers.get('subject')  + '\n');
+    console.log('From   :', froms);
+    console.log('Subject:', headers.get('subject'), '\n');
+  });
+
+  //contents
+  mailparser.on('data', data => {
+    if (data.type === 'text') {
+      bodiesStream.write(data.text + '\n\n');
+    }
+  });
+ 
+
+  mailparser.write(msg);
+  mailparser.end();
+});
+
+// pipe stdin to mbox parser
+process.stdin.pipe(mbox);
